@@ -13,6 +13,8 @@ base_density=160
 # What `wm density` printed as the override before the run, or nothing when the device ran at its own density.
 density_to_restore=""
 density_changed=0
+# The run's scratch folder, which the exit trap removes.
+work=""
 
 fail_step() {
     echo "step failed: $1"
@@ -91,12 +93,12 @@ open_app() {
 }
 
 main() {
-    local here app shots work
+    local here app shots
     here="$(cd "$(dirname "$0")" && pwd)"
     app="${here}/ReproducerApp"
     shots="${here}/screenshots"
     work="$(mktemp -d)"
-    trap 'restore_density; rm -rf "${work}"' EXIT
+    trap 'restore_density; if [[ -n "${work}" ]]; then rm -rf "${work}"; fi' EXIT
     mkdir -p "${shots}"
 
     local system node_version java_version
